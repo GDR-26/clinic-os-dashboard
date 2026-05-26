@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Smile Dental — AI Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0e0e0c; --ink2:#38382f; --ink3:#65655c; --ink4:#a5a59a;
+  --bg:#edecea; --bg2:#e4e3df; --bg3:#d8d7d1; --white:#fafaf8;
+  --teal:#0a7265; --teal2:#0d8f80; --teal-light:#daf0ec; --teal-mid:#b8e6df;
+  --amber:#b85c0a; --amber-light:#fef0e4;
+  --red:#a42b2b; --red-light:#fce8e8;
+  --blue:#1450a0; --blue-light:#e4edf8;
+  --gold:#8f6b1a; --gold-light:#faf0d8;
+  --green:#166534; --green-light:#dcfce7;
+  --serif:'Fraunces',Georgia,serif;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+  --shadow-xs:0 1px 2px rgba(14,14,12,0.06);
+  --shadow-sm:0 2px 4px rgba(14,14,12,0.06),0 6px 16px rgba(14,14,12,0.05);
+  --shadow:0 4px 8px rgba(14,14,12,0.07),0 16px 32px rgba(14,14,12,0.07);
+  --shadow-lg:0 8px 16px rgba(14,14,12,0.08),0 32px 64px rgba(14,14,12,0.12);
+  --shadow-xl:0 20px 40px rgba(14,14,12,0.15),0 4px 8px rgba(14,14,12,0.08);
+  --r:20px; --r-sm:12px;
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100vh;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
+
+/* ── LOCK ── */
+.lock-screen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;}
+.lock-box{width:100%;max-width:380px;background:var(--white);border-radius:28px;padding:44px 36px;box-shadow:var(--shadow-xl);text-align:center;border:1px solid var(--bg3);}
+.lock-logo{width:60px;height:60px;background:linear-gradient(135deg,var(--teal),var(--teal2));border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 22px;box-shadow:0 8px 24px rgba(10,114,101,0.3);}
+.lock-title{font-family:var(--serif);font-size:28px;color:var(--ink);margin-bottom:6px;font-weight:600;}
+.lock-title em{color:var(--teal);font-style:italic;}
+.lock-sub{font-size:13px;color:var(--ink3);margin-bottom:32px;line-height:1.7;}
+.lock-input{width:100%;padding:15px 18px;border:2px solid var(--bg3);border-radius:14px;background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:17px;outline:none;text-align:center;letter-spacing:0.15em;-webkit-appearance:none;margin-bottom:12px;transition:border-color 0.2s,box-shadow 0.2s;}
+.lock-input:focus{border-color:var(--teal);box-shadow:0 0 0 4px rgba(10,114,101,0.1);}
+.lock-input.error{border-color:var(--red);animation:shake 0.4s ease;}
+.lock-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border:none;border-radius:14px;font-family:var(--sans);font-size:15px;font-weight:800;cursor:pointer;letter-spacing:0.02em;box-shadow:0 4px 16px rgba(10,114,101,0.3);transition:transform 0.15s,box-shadow 0.15s;}
+.lock-btn:active{transform:scale(0.98);box-shadow:0 2px 8px rgba(10,114,101,0.2);}
+.lock-error{font-size:12px;color:var(--red);min-height:20px;margin-top:10px;font-weight:500;}
+.lock-footer{font-size:10px;color:var(--ink4);margin-top:28px;font-family:var(--mono);}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+/* ── LAYOUT ── */
+.page{max-width:1160px;margin:0 auto;padding:24px 16px 120px;position:relative;z-index:1;}
+
+/* ── HEADER ── */
+.header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:28px;padding:20px 24px;background:var(--white);border-radius:var(--r);box-shadow:var(--shadow-sm);border:1px solid var(--bg3);}
+.header-left{display:flex;align-items:center;gap:14px;}
+.clinic-avatar{width:46px;height:46px;background:linear-gradient(135deg,var(--teal),var(--teal2));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 4px 12px rgba(10,114,101,0.25);}
+.eyebrow{font-family:var(--mono);font-size:9px;color:var(--ink4);letter-spacing:0.16em;text-transform:uppercase;margin-bottom:2px;}
+.clinic-name{font-family:var(--serif);font-size:22px;line-height:1.1;color:var(--ink);font-weight:600;}
+.clinic-name em{color:var(--teal);font-style:italic;}
+.header-meta{font-size:11px;color:var(--ink3);display:flex;align-items:center;gap:8px;margin-top:3px;flex-wrap:wrap;}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--teal);animation:pulse 2.5s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 0 0 rgba(10,114,101,0.4)}70%{opacity:0.7;transform:scale(1.2);box-shadow:0 0 0 6px rgba(10,114,101,0)}}
+.header-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.connect-btn{padding:10px 18px;background:var(--ink);color:#fff;border:none;border-radius:10px;font-family:var(--sans);font-size:12px;font-weight:700;cursor:pointer;transition:opacity 0.2s;}
+.refresh-btn{padding:9px 16px;background:var(--bg);color:var(--ink2);border:1.5px solid var(--bg3);border-radius:10px;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;box-shadow:var(--shadow-xs);transition:all 0.2s;}
+.refresh-btn:hover{background:var(--white);border-color:var(--ink4);}
+
+/* ── CONFIG ── */
+.config-panel{background:var(--white);border:1.5px solid var(--bg3);border-radius:var(--r);padding:28px;margin-bottom:24px;box-shadow:var(--shadow);display:none;}
+.config-panel.open{display:block;}
+.config-panel h3{font-family:var(--serif);font-size:24px;margin-bottom:6px;font-weight:600;}
+.config-panel p{font-size:12px;color:var(--ink3);margin-bottom:18px;line-height:1.7;}
+.config-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px;}
+.field label{display:block;font-size:10px;font-family:var(--mono);color:var(--ink3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px;font-weight:500;}
+.field input{width:100%;padding:13px 16px;border:2px solid var(--bg3);border-radius:12px;background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:13px;outline:none;-webkit-appearance:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.field input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(10,114,101,0.08);}
+.load-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border:none;border-radius:12px;font-family:var(--sans);font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(10,114,101,0.25);}
+.security-note{display:flex;gap:10px;padding:14px 16px;background:var(--teal-light);border-radius:12px;margin-bottom:18px;font-size:11px;color:var(--teal);line-height:1.6;font-weight:500;}
+
+/* ── STATUS ── */
+.status-bar{display:flex;align-items:center;gap:8px;padding:11px 18px;background:var(--gold-light);border-radius:12px;margin-bottom:28px;font-size:11px;color:var(--gold);font-weight:600;border:1px solid rgba(143,107,26,0.15);}
+.status-bar.live{background:var(--teal-light);color:var(--teal);border-color:rgba(10,114,101,0.15);}
+.status-bar.warn{background:var(--amber-light);color:var(--amber);border-color:rgba(184,92,10,0.15);}
+.status-bar.err{background:var(--red-light);color:var(--red);border-color:rgba(164,43,43,0.15);}
+
+/* ── SEC LABEL ── */
+.sec-label{font-family:var(--mono);font-size:9px;color:var(--ink4);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:14px;margin-top:36px;display:flex;align-items:center;gap:10px;}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--bg3);}
+
+/* ── TODAY OVERVIEW ── */
+.today-overview{background:linear-gradient(135deg,var(--teal) 0%,var(--teal2) 100%);border-radius:var(--r);padding:0;display:grid;grid-template-columns:repeat(2,1fr);position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(10,114,101,0.3);}
+.today-overview::before{content:'';position:absolute;right:-80px;top:-80px;width:250px;height:250px;background:rgba(255,255,255,0.05);border-radius:50%;}
+.today-overview::after{content:'';position:absolute;left:-40px;bottom:-60px;width:180px;height:180px;background:rgba(255,255,255,0.03);border-radius:50%;}
+.today-ov-item{padding:22px 20px;position:relative;z-index:1;}
+.today-ov-item:not(:last-child){border-right:1px solid rgba(255,255,255,0.1);}
+.today-ov-item:nth-child(1),.today-ov-item:nth-child(2){border-bottom:1px solid rgba(255,255,255,0.1);}
+.today-ov-icon{font-size:14px;margin-bottom:6px;opacity:0.7;}
+.today-ov-val{font-family:var(--serif);font-size:34px;color:#fff;line-height:1;margin-bottom:3px;font-weight:700;letter-spacing:-0.5px;}
+.today-ov-label{font-size:10px;color:rgba(255,255,255,0.6);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;}
+
+/* ── HERO REVENUE ── */
+.hero-revenue{background:var(--ink);border-radius:var(--r);padding:36px 32px;position:relative;overflow:hidden;box-shadow:var(--shadow-xl);}
+.hero-bg-chart{position:absolute;bottom:0;left:0;right:0;height:80px;opacity:0.06;}
+.hero-glow{position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(78,205,196,0.15),transparent 70%);pointer-events:none;}
+.hero-tag{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.hero-tag-dot{width:7px;height:7px;border-radius:50%;background:#4ECDC4;animation:pulse 2s infinite;}
+.hero-val{font-family:var(--serif);font-size:60px;color:#fff;line-height:1;margin-bottom:4px;letter-spacing:-2px;font-weight:700;}
+.hero-val span{color:#4ECDC4;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(78,205,196,0.12);border:1px solid rgba(78,205,196,0.2);color:#4ECDC4;font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:20px;margin-bottom:20px;font-weight:500;}
+.hero-divider{height:1px;background:rgba(255,255,255,0.06);margin-bottom:20px;}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
+.hero-stat{padding:0 16px;border-right:1px solid rgba(255,255,255,0.07);}
+.hero-stat:first-child{padding-left:0;}
+.hero-stat:last-child{border-right:none;}
+.hero-stat-val{font-family:var(--mono);font-size:16px;color:#fff;line-height:1;margin-bottom:4px;font-weight:500;}
+.hero-stat-label{font-size:10px;color:rgba(255,255,255,0.3);line-height:1.4;font-weight:500;}
+
+/* ── AI WORKED TODAY ── */
+.ai-worked-card{background:linear-gradient(135deg,#1a1a18,#242420);border-radius:var(--r);padding:24px;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,0.04);}
+.ai-worked-header{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.ai-worked-icon{width:32px;height:32px;background:rgba(78,205,196,0.12);border:1px solid rgba(78,205,196,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.ai-worked-title{font-family:var(--serif);font-size:16px;color:#fff;font-weight:600;}
+.ai-worked-sub{font-size:10px;color:rgba(255,255,255,0.3);font-family:var(--mono);margin-top:1px;}
+.ai-stat-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.ai-stat-row:last-child{border-bottom:none;}
+.ai-stat-icon{font-size:14px;width:24px;text-align:center;flex-shrink:0;}
+.ai-stat-text{font-size:12px;color:rgba(255,255,255,0.6);flex:1;font-weight:500;}
+.ai-stat-val{font-family:var(--mono);font-size:12px;color:#4ECDC4;font-weight:500;flex-shrink:0;}
+
+/* ── LEAKAGE ── */
+.leakage-card{background:var(--white);border-radius:var(--r);padding:26px;box-shadow:var(--shadow);border:1px solid var(--bg3);}
+.leakage-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--bg2);}
+.leakage-row:last-child{border-bottom:none;}
+.leakage-label{font-size:12px;color:var(--ink2);display:flex;align-items:center;gap:10px;font-weight:600;}
+.leakage-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.leakage-val{font-family:var(--mono);font-size:15px;font-weight:600;}
+
+/* ── TODAY SCHEDULE ── */
+.today-card{background:var(--white);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--bg3);}
+.today-header{background:linear-gradient(135deg,var(--teal),var(--teal2));padding:18px 22px;display:flex;justify-content:space-between;align-items:center;}
+.today-header-title{font-family:var(--serif);font-size:18px;color:#fff;font-weight:600;}
+.today-header-date{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.65);}
+.today-count-badge{background:rgba(255,255,255,0.15);color:#fff;font-family:var(--mono);font-size:10px;padding:5px 14px;border-radius:20px;font-weight:600;border:1px solid rgba(255,255,255,0.2);}
+.today-slot{display:flex;flex-direction:column;gap:10px;padding:16px 22px;border-bottom:1px solid var(--bg2);transition:background 0.15s;}
+.today-slot:last-child{border-bottom:none;}
+.today-slot:hover{background:var(--bg);}
+.today-slot-top{display:flex;align-items:center;gap:12px;}
+.today-time{font-family:var(--mono);font-size:12px;color:var(--teal);font-weight:600;flex-shrink:0;width:70px;}
+.today-info{flex:1;min-width:0;}
+.today-name{font-size:13px;font-weight:800;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;}
+.today-service{font-size:11px;color:var(--ink3);font-weight:500;}
+.today-actions{display:flex;gap:7px;flex-shrink:0;}
+.btn-attended{padding:8px 14px;background:var(--green-light);color:var(--green);border:1.5px solid #86efac;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all 0.2s;white-space:nowrap;box-shadow:0 2px 6px rgba(22,101,52,0.1);}
+.btn-attended:hover{background:#bbf7d0;transform:translateY(-1px);box-shadow:0 4px 10px rgba(22,101,52,0.15);}
+.btn-noshow{padding:8px 14px;background:var(--amber-light);color:var(--amber);border:1.5px solid #fed7aa;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all 0.2s;white-space:nowrap;box-shadow:0 2px 6px rgba(184,92,10,0.1);}
+.btn-noshow:hover{background:#ffedd5;transform:translateY(-1px);box-shadow:0 4px 10px rgba(184,92,10,0.15);}
+.btn-done{padding:8px 14px;background:var(--bg2);color:var(--ink3);border:1.5px solid var(--bg3);border-radius:999px;font-size:11px;font-weight:700;cursor:default;white-space:nowrap;}
+.today-empty{padding:32px;text-align:center;font-size:13px;color:var(--ink3);font-weight:500;}
+
+/* ── CARDS ── */
+.card{background:var(--white);border-radius:var(--r);padding:26px;box-shadow:var(--shadow);border:1px solid var(--bg3);transition:box-shadow 0.25s,transform 0.25s;}
+.card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:20px;}
+.card-title{font-size:13px;font-weight:800;color:var(--ink);letter-spacing:0.01em;}
+.card-count{font-family:var(--mono);font-size:10px;color:var(--ink4);}
+.main-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px;}
+.card-wide{margin-bottom:0;}
+
+/* ── KPI ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.kpi{background:var(--white);border-radius:var(--r);padding:22px 20px;box-shadow:var(--shadow);border:1px solid var(--bg3);opacity:0;animation:fadeUp 0.5s ease forwards;transition:box-shadow 0.25s,transform 0.25s;}
+.kpi:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
+.kpi:nth-child(1){animation-delay:0.06s}.kpi:nth-child(2){animation-delay:0.12s}
+.kpi:nth-child(3){animation-delay:0.18s}.kpi:nth-child(4){animation-delay:0.24s}
+.kpi-icon{font-size:20px;margin-bottom:12px;display:block;}
+.kpi-label{font-size:10px;color:var(--ink3);margin-bottom:8px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;}
+.kpi-val{font-family:var(--serif);font-size:34px;line-height:1;color:var(--ink);margin-bottom:5px;font-weight:700;}
+.kpi-val.good{color:var(--teal)}.kpi-val.warn{color:var(--amber)}.kpi-val.bad{color:var(--red)}
+.kpi-sub{font-size:10px;color:var(--ink4);font-weight:500;}
+
+/* ── PENDING ATTENTION ── */
+.attention-item{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--bg2);}
+.attention-item:last-child{border-bottom:none;}
+.attention-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.attention-dot.red{background:var(--red);box-shadow:0 0 0 3px rgba(164,43,43,0.15);}
+.attention-dot.amber{background:var(--amber);box-shadow:0 0 0 3px rgba(184,92,10,0.15);}
+.attention-text{font-size:12px;color:var(--ink2);line-height:1.5;font-weight:600;}
+.attention-none{font-size:12px;color:var(--teal);padding:12px 0;display:flex;align-items:center;gap:10px;font-weight:700;}
+
+/* ── CONFIRMATION ── */
+.conf-wrap{display:flex;align-items:center;gap:20px;padding:8px 0;}
+.conf-circle{width:88px;height:88px;flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(10,114,101,0.2));}
+.conf-val{font-family:var(--serif);font-size:42px;line-height:1;margin-bottom:4px;font-weight:700;}
+.conf-sub{font-size:11px;color:var(--ink3);line-height:1.5;font-weight:500;}
+
+/* ── FUNNEL ── */
+.funnel-wrap{display:flex;flex-direction:column;gap:14px;}
+.funnel-row{display:flex;align-items:center;gap:14px;}
+.funnel-label{font-size:11px;color:var(--ink3);width:86px;flex-shrink:0;font-weight:600;}
+.funnel-track{flex:1;height:10px;background:var(--bg2);border-radius:5px;overflow:hidden;}
+.funnel-fill{height:100%;border-radius:5px;transition:width 1s cubic-bezier(0.16,1,0.3,1);}
+.funnel-num{font-family:var(--mono);font-size:12px;color:var(--ink3);width:32px;text-align:right;flex-shrink:0;font-weight:500;}
+
+/* ── AI INSIGHTS ── */
+.insight-card{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;border-radius:14px;margin-bottom:10px;line-height:1.6;transition:transform 0.2s;}
+.insight-card:last-child{margin-bottom:0;}
+.insight-card:hover{transform:translateX(3px);}
+.insight-card.warn{background:#fff7ed;border-left:4px solid #f97316;box-shadow:0 2px 8px rgba(249,115,22,0.08);}
+.insight-card.good{background:#f0fdf4;border-left:4px solid #22c55e;box-shadow:0 2px 8px rgba(34,197,94,0.08);}
+.insight-card.blue{background:#eff6ff;border-left:4px solid #3b82f6;box-shadow:0 2px 8px rgba(59,130,246,0.08);}
+.insight-card.red{background:#fef2f2;border-left:4px solid #ef4444;box-shadow:0 2px 8px rgba(239,68,68,0.08);}
+.insight-icon{font-size:16px;flex-shrink:0;margin-top:2px;}
+.insight-text{font-size:12px;color:var(--ink2);font-weight:600;line-height:1.6;}
+
+/* ── BARS ── */
+.bar-item{margin-bottom:16px}.bar-item:last-child{margin-bottom:0}
+.bar-meta{display:flex;justify-content:space-between;margin-bottom:7px;}
+.bar-name{font-size:12px;color:var(--ink2);font-weight:700;}
+.bar-num{font-family:var(--mono);font-size:11px;color:var(--ink3);font-weight:500;}
+.bar-track{height:7px;background:var(--bg2);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.8s cubic-bezier(0.16,1,0.3,1);}
+
+/* ── STATS ── */
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bg2);}
+.stat-row:last-child{border-bottom:none;}
+.stat-label{color:var(--ink2);font-size:12px;font-weight:600;}
+.stat-val{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink);}
+.stat-val.good{color:var(--teal)}.stat-val.warn{color:var(--amber)}.stat-val.bad{color:var(--red)}
+
+/* ── ACTIVITY ── */
+.activity-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.activity-item{background:var(--bg);border-radius:14px;padding:18px 10px;text-align:center;border:1px solid var(--bg3);transition:transform 0.2s,box-shadow 0.2s;}
+.activity-item:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm);}
+.activity-num{font-family:var(--serif);font-size:32px;color:var(--ink);line-height:1;margin-bottom:6px;font-weight:700;}
+.activity-label{font-size:10px;color:var(--ink3);line-height:1.4;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;}
+
+/* ── UPCOMING ── */
+.appt-list{display:flex;flex-direction:column;gap:10px;}
+.appt-card{background:var(--bg);border-radius:14px;padding:16px 18px;transition:background 0.15s,transform 0.2s;border:1px solid transparent;}
+.appt-card:hover{background:var(--bg2);transform:translateX(3px);border-color:var(--bg3);}
+.appt-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px;}
+.appt-patient{font-size:13px;font-weight:800;color:var(--ink);}
+.appt-card-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--ink3);font-weight:600;}
+.appt-bid{font-family:var(--mono);font-size:9px;color:var(--ink4);margin-top:7px;}
+.pill{display:inline-block;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:0.02em;}
+.pill-booked{background:var(--blue-light);color:var(--blue)}
+.pill-attended{background:var(--green-light);color:var(--green)}
+.pill-cancelled{background:var(--red-light);color:var(--red)}
+.pill-noshow{background:var(--amber-light);color:var(--amber)}
+.pill-rescheduled{background:#ede9fe;color:#6d28d9}
+.empty{color:var(--ink4);font-size:12px;padding:24px 0;text-align:center;font-weight:600;}
+
+/* ── TOGGLE ── */
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;margin-top:36px;}
+.toggle-label{font-family:var(--mono);font-size:9px;color:var(--ink4);letter-spacing:0.18em;text-transform:uppercase;font-weight:500;}
+.period-toggle{display:flex;background:var(--bg2);border-radius:20px;padding:3px;gap:2px;border:1px solid var(--bg3);}
+.period-btn{padding:5px 16px;border-radius:16px;border:none;font-family:var(--sans);font-size:11px;font-weight:700;cursor:pointer;background:transparent;color:var(--ink3);transition:all 0.15s;}
+.period-btn.active{background:var(--white);color:var(--ink);box-shadow:var(--shadow-sm);}
+
+/* small toggle for cards */
+.card-toggle{display:flex;background:var(--bg2);border-radius:16px;padding:2px;gap:2px;border:1px solid var(--bg3);}
+.card-toggle-btn{padding:3px 10px;border-radius:12px;border:none;font-family:var(--sans);font-size:10px;font-weight:700;cursor:pointer;background:transparent;color:var(--ink3);transition:all 0.15s;}
+.card-toggle-btn.active{background:var(--white);color:var(--ink);box-shadow:var(--shadow-xs);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--ink);color:#fff;padding:14px 24px;border-radius:14px;font-size:13px;font-weight:700;z-index:9999;transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);white-space:nowrap;box-shadow:var(--shadow-xl);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.success{background:linear-gradient(135deg,var(--teal),var(--teal2));}
+.toast.error{background:var(--red);}
+
+/* ── FOOTER ── */
+.footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--bg3);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.footer-left{font-family:var(--mono);font-size:10px;color:var(--ink4);}
+.footer-right{font-size:10px;color:var(--ink4);}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes countUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.section-enter{opacity:0;animation:fadeUp 0.5s ease forwards;}
+
+/* ── RESET MODAL ── */
+.reset-modal{position:fixed;inset:0;background:rgba(14,14,12,0.6);z-index:9998;display:none;align-items:flex-end;justify-content:center;padding:24px;backdrop-filter:blur(6px);}
+.reset-modal.open{display:flex;}
+.reset-box{background:var(--white);border-radius:28px;padding:36px;width:100%;max-width:400px;text-align:center;box-shadow:var(--shadow-xl);}
+.reset-box h3{font-family:var(--serif);font-size:26px;margin-bottom:10px;font-weight:600;}
+.reset-box p{font-size:12px;color:var(--ink3);margin-bottom:28px;line-height:1.7;}
+.reset-confirm{width:100%;padding:15px;background:var(--red);color:#fff;border:none;border-radius:14px;font-family:var(--sans);font-size:14px;font-weight:800;cursor:pointer;margin-bottom:10px;}
+.reset-cancel{width:100%;padding:13px;background:transparent;color:var(--ink3);border:2px solid var(--bg3);border-radius:14px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;}
+
+/* ── SPARKLINE ── */
+.sparkline{position:absolute;bottom:0;left:0;right:0;height:70px;opacity:0.08;pointer-events:none;}
+
+/* ── DESKTOP ── */
+@media(min-width:700px){
+  .page{padding:32px 28px 80px;}
+  .kpi-grid{grid-template-columns:repeat(4,1fr);}
+  .main-grid{grid-template-columns:1fr 1fr;}
+  .clinic-name{font-size:24px;}
+  .today-overview{grid-template-columns:repeat(4,1fr);}
+  .hero-val{font-size:72px;}
+  .today-ov-val{font-size:38px;}
+  .today-slot{flex-direction:row;align-items:center;gap:14px;}
+  .today-slot-top{flex:1;min-width:0;}
+  .today-actions{flex-shrink:0;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOCK -->
+<div class="lock-screen" id="lock-screen">
+  <div class="lock-box">
+    <div class="lock-logo">🦷</div>
+    <div class="lock-title">Smile <em>Dental</em></div>
+    <div class="lock-sub">AI Command Center · Staff Only<br/>Sign in to access your dashboard</div>
+
+    <!-- Email Field -->
+    <div style="text-align:left;margin-bottom:12px">
+      <label style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px">Email</label>
+      <input class="lock-input" id="login-email" type="email"
+        placeholder="your@email.com"
+        style="letter-spacing:normal;text-align:left;font-family:inherit;font-size:14px"
+        onkeydown="if(event.key==='Enter')document.getElementById('login-password').focus()"/>
+    </div>
+
+    <!-- Password Field -->
+    <div style="text-align:left;margin-bottom:16px">
+      <label style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px">Password</label>
+      <input class="lock-input" id="login-password" type="password"
+        placeholder="••••••••" maxlength="64"
+        style="text-align:left"
+        onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+
+    <button class="lock-btn" id="login-btn" onclick="doLogin()">
+      Sign In
+    </button>
+    <div class="lock-error" id="lock-error"></div>
+    <div class="lock-footer">Powered by WhatsApp AI Automation</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="clinic-avatar">🦷</div>
+      <div>
+        <div class="eyebrow">AI Clinic Automation</div>
+        <div class="clinic-name" id="clinic-title" onclick="handleTitleTap()">Smile <em>Dental</em> Clinic</div>
+        <div class="header-meta">
+          <span class="live-dot"></span>
+          <span id="data-status">Sample data</span>
+          <span style="color:var(--bg3)">·</span>
+          <span id="last-updated">—</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="connect-btn" id="connect-btn" onclick="toggleConfig()" style="display:none">Connect Sheet</button>
+      <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+      <button class="refresh-btn" onclick="logout()" style="color:#ef4444;border-color:#fecaca">⎋ Logout</button>
+    </div>
+  </div>
+
+  <!-- CONFIG -->
+  <div class="config-panel" id="config-panel">
+    <h3>Connect your data</h3>
+    <p>Enter your n8n webhook URL and secret token to load live clinic data.</p>
+    <div class="security-note"><span>🔒</span><span><strong>Secure:</strong> Your credentials stay in n8n — never exposed in this file.</span></div>
+    <div class="config-grid">
+      <div class="field"><label>n8n Webhook URL</label><input id="webhook-url" placeholder="https://your-n8n.railway.app/webhook/dashboard"/></div>
+      <div class="field"><label>Secret Token</label><input id="webhook-token" type="password" placeholder="your-secret-token"/></div>
+      <div class="field"><label>Clinic Name</label><input id="clinic-input" value="Smile Dental Clinic"/></div>
+    </div>
+    <button class="load-btn" onclick="loadData()">Load Live Data</button>
+  </div>
+
+  <!-- STATUS -->
+  <div class="status-bar" id="status-bar">
+    <span>⬤</span><span id="status-msg">Showing sample data — connect your sheet to see live data</span>
+  </div>
+
+  <!-- TODAY OVERVIEW -->
+  <div class="sec-label">Today at a glance</div>
+  <div class="today-overview">
+    <div class="today-ov-item">
+      <div class="today-ov-icon">📅</div>
+      <div class="today-ov-val" id="ov-scheduled">—</div>
+      <div class="today-ov-label">Scheduled</div>
+    </div>
+    <div class="today-ov-item">
+      <div class="today-ov-icon">⚠️</div>
+      <div class="today-ov-val" id="ov-cancelled">—</div>
+      <div class="today-ov-label">Cancellations</div>
+    </div>
+    <div class="today-ov-item">
+      <div class="today-ov-icon">✅</div>
+      <div class="today-ov-val" id="ov-confirm">—</div>
+      <div class="today-ov-label">Confirmation Rate</div>
+    </div>
+    <div class="today-ov-item">
+      <div class="today-ov-icon">💰</div>
+      <div class="today-ov-val" id="ov-recovered">—</div>
+      <div class="today-ov-label">Recovered</div>
+    </div>
+  </div>
+
+  <!-- HERO + AI WORKED TODAY -->
+  <div class="sec-label">Revenue intelligence</div>
+  <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+    <div class="card-toggle">
+      <button class="card-toggle-btn active" id="rev-btn-month" onclick="setRevPeriod('month')">This Month</button>
+      <button class="card-toggle-btn" id="rev-btn-all" onclick="setRevPeriod('all')">All Time</button>
+    </div>
+  </div>
+  <div class="hero-revenue">
+    <div class="hero-glow"></div>
+    <svg class="sparkline" viewBox="0 0 400 80" preserveAspectRatio="none">
+      <polyline id="sparkline-path" fill="none" stroke="#4ECDC4" stroke-width="2" points="0,60 40,50 80,55 120,40 160,45 200,30 240,35 280,20 320,25 360,15 400,10"/>
+    </svg>
+    <div class="hero-tag"><div class="hero-tag-dot"></div><span id="hero-tag-text">Total Revenue Recovered — All Time</span></div>
+    <div class="hero-val">₹<span id="hero-rev-num">0</span></div>
+    <div class="hero-badge" id="hero-badge">💰 recovered by AI automation</div>
+    <div class="hero-divider"></div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-val" id="hero-missed">₹0</div><div class="hero-stat-label">Lost to cancellations</div></div>
+      <div class="hero-stat"><div class="hero-stat-val" id="hero-noshow-rev">₹0</div><div class="hero-stat-label">Lost to no-shows</div></div>
+      <div class="hero-stat"><div class="hero-stat-val" id="hero-month-rev">₹0</div><div class="hero-stat-label">Earned this month</div></div>
+    </div>
+  </div>
+
+  <!-- AI WORKED TODAY + LEAKAGE -->
+  <div class="main-grid" style="margin-top:14px;">
+    <div class="ai-worked-card">
+      <div class="ai-worked-header">
+        <div class="ai-worked-icon">🤖</div>
+        <div style="flex:1;">
+          <div class="ai-worked-title" id="ai-worked-title">AI Worked Today</div>
+          <div class="ai-worked-sub" id="ai-worked-sub">TODAY'S AUTOMATION SUMMARY</div>
+        </div>
+        <div class="card-toggle" style="border-color:rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);">
+          <button class="card-toggle-btn active" id="ai-btn-today" onclick="setAiPeriod('today')" style="color:var(--ink);">Today</button>
+          <button class="card-toggle-btn" id="ai-btn-month" onclick="setAiPeriod('month')" style="color:rgba(255,255,255,0.4);">Month</button>
+          <button class="card-toggle-btn" id="ai-btn-all" onclick="setAiPeriod('all')" style="color:rgba(255,255,255,0.4);">All</button>
+        </div>
+      </div>
+      <div id="ai-worked-stats"><div style="color:rgba(255,255,255,0.3);font-size:12px;padding:8px 0;">Load data to see today's activity</div></div>
+    </div>
+    <div class="leakage-card">
+      <div class="card-head"><div class="card-title">💧 Revenue Leakage</div><div class="card-count" id="leakage-eff">—% efficiency</div></div>
+      <div class="leakage-row"><div class="leakage-label"><div class="leakage-dot" style="background:var(--red)"></div>Lost to cancellations</div><div class="leakage-val" id="leak-cancel" style="color:var(--red)">—</div></div>
+      <div class="leakage-row"><div class="leakage-label"><div class="leakage-dot" style="background:var(--amber)"></div>Lost to no-shows</div><div class="leakage-val" id="leak-noshow" style="color:var(--amber)">—</div></div>
+      <div class="leakage-row"><div class="leakage-label"><div class="leakage-dot" style="background:var(--teal)"></div>Recovered by AI</div><div class="leakage-val" id="leak-recovered" style="color:var(--teal)">—</div></div>
+    </div>
+  </div>
+
+  <!-- TODAY SCHEDULE -->
+  <div class="sec-label">Today's schedule</div>
+  <div class="today-card">
+    <div class="today-header">
+      <div><div class="today-header-title">🦷 Today's Appointments</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;">
+        <span class="today-count-badge" id="today-badge">0 patients</span>
+        <div class="today-header-date" id="today-date-label">—</div>
+      </div>
+    </div>
+    <div id="today-slots"></div>
+  </div>
+
+  <!-- PENDING ATTENTION + CONFIRMATION -->
+  <div class="main-grid" style="margin-top:14px;">
+    <div class="card">
+      <div class="card-head"><div class="card-title">⚠️ Pending Attention</div></div>
+      <div id="risks-list"><div class="empty">Load data to see alerts</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">✅ Confirmation Rate</div></div>
+      <div class="conf-wrap">
+        <svg class="conf-circle" viewBox="0 0 88 88">
+          <circle cx="44" cy="44" r="36" fill="none" stroke="var(--bg2)" stroke-width="10"/>
+          <circle id="conf-arc" cx="44" cy="44" r="36" fill="none" stroke="var(--teal)" stroke-width="10"
+            stroke-dasharray="226.2" stroke-dashoffset="226.2" stroke-linecap="round"
+            transform="rotate(-90 44 44)" style="transition:stroke-dashoffset 1.1s cubic-bezier(0.16,1,0.3,1)"/>
+        </svg>
+        <div>
+          <div class="conf-val good" id="conf-rate-val">—</div>
+          <div class="conf-sub">of all bookings<br/>confirmed by patients</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="sec-label">Clinic metrics</div>
+  <div class="kpi-grid">
+    <div class="kpi"><span class="kpi-icon">📊</span><div class="kpi-label">Total Bookings</div><div class="kpi-val" id="m-total">—</div><div class="kpi-sub">all time</div></div>
+    <div class="kpi"><span class="kpi-icon">📅</span><div class="kpi-label">This Month</div><div class="kpi-val" id="m-month">—</div><div class="kpi-sub" id="m-month-sub">—</div></div>
+    <div class="kpi"><span class="kpi-icon">🦷</span><div class="kpi-label">Today</div><div class="kpi-val" id="m-today">—</div><div class="kpi-sub">scheduled</div></div>
+    <div class="kpi"><span class="kpi-icon">⚠️</span><div class="kpi-label">No-show Rate</div><div class="kpi-val" id="m-noshow">—</div><div class="kpi-sub">excl. cancelled</div></div>
+  </div>
+
+  <!-- FUNNEL -->
+  <div class="sec-label">Patient journey</div>
+  <div class="card card-wide">
+    <div class="card-head"><div class="card-title">Booking → Attended pipeline</div><div class="card-count" id="funnel-count">—</div></div>
+    <div class="funnel-wrap" id="funnel-wrap"><div class="empty">Load data</div></div>
+  </div>
+
+  <!-- AI SUGGESTIONS -->
+  <div class="sec-label">AI clinic insights</div>
+  <div class="card card-wide">
+    <div class="card-head"><div class="card-title">✨ Smart Insights</div><div class="card-count">auto-generated from your data</div></div>
+    <div id="ai-suggestions"><div class="empty">Load data to see insights</div></div>
+  </div>
+
+  <!-- UPCOMING -->
+  <div class="sec-label">Upcoming appointments</div>
+  <div class="card card-wide">
+    <div class="card-head"><div class="card-title">Next scheduled</div><div class="card-count" id="upcoming-count">—</div></div>
+    <div class="appt-list" id="appt-list"><div class="empty">Load data to see appointments</div></div>
+  </div>
+
+  <!-- BREAKDOWN -->
+  <div class="toggle-wrap">
+    <div class="toggle-label">Breakdown</div>
+    <div class="period-toggle">
+      <button class="period-btn active" id="btn-month" onclick="setPeriod('month')">This Month</button>
+      <button class="period-btn" id="btn-all" onclick="setPeriod('all')">All Time</button>
+    </div>
+  </div>
+  <div class="main-grid">
+    <div class="card"><div class="card-head"><div class="card-title">Booking Status</div><div class="card-count" id="status-total">—</div></div><div id="status-bars"><div class="empty">Load data</div></div></div>
+    <div class="card"><div class="card-head"><div class="card-title">Services Popularity</div><div class="card-count" id="service-total">—</div></div><div id="service-bars"><div class="empty">Load data</div></div></div>
+  </div>
+
+  <!-- NO-SHOW + ACTIVITY -->
+  <div class="main-grid">
+    <div class="card"><div class="card-head"><div class="card-title">No-show & Recovery</div></div><div id="noshow-stats"><div class="empty">Load data</div></div></div>
+    <div class="card"><div class="card-head"><div class="card-title">AI Clinic Activity</div></div>
+      <div class="activity-grid" id="activity-grid">
+        <div class="activity-item"><div class="activity-num">—</div><div class="activity-label">Confirmed</div></div>
+        <div class="activity-item"><div class="activity-num">—</div><div class="activity-label">Recovered</div></div>
+        <div class="activity-item"><div class="activity-num">—</div><div class="activity-label">Reviews</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="sec-label" id="history-label">Visit history — this month</div>
+  <div class="card card-wide" style="margin-bottom:32px;">
+    <div class="card-head"><div class="card-title">Attended & No-shows</div><div class="card-count" id="history-count">—</div></div>
+    <div class="appt-list" id="history-list"><div class="empty">Load data to see history</div></div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-left">Smile Dental · WhatsApp AI Automation</div>
+    <div class="footer-right" id="footer-time">—</div>
+  </div>
+</div>
+
+<!-- RESET MODAL -->
+<div class="reset-modal" id="reset-modal">
+  <div class="reset-box">
+    <h3>Reset Connection?</h3>
+    <p>This will clear your saved webhook URL and token. You'll need to reconnect to see live data.</p>
+    <button class="reset-confirm" onclick="confirmReset()">Yes, Reset</button>
+    <button class="reset-cancel" onclick="closeReset()">Cancel</button>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────
+// BACKEND CONFIG
+// ─────────────────────────────────────────
+const BACKEND_URL = 'https://smile-dental-backend-production.up.railway.app';
+const ATTENDANCE_WEBHOOK = `${BACKEND_URL}/api/proxy/attendance`;
+
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast '+(type||'');
+  void t.offsetWidth;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+async function markAttendance(bookingId,action,btnEl){
+  const jwt = sessionStorage.getItem('dental_jwt') || '';
+  btnEl.disabled=true;btnEl.textContent='...';
+  try{
+    const res=await fetch(ATTENDANCE_WEBHOOK,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization': `Bearer ${jwt}`
+      },
+      body:JSON.stringify({bookingId,action})
+    });
+    const data=await res.json();
+    if(data.success){
+      showToast(action==='attended'?'✅ Marked as Attended!':'⚠️ Marked as No-show','success');
+      const actions=btnEl.closest('.today-actions');
+      if(actions)actions.innerHTML=`<span class="btn-done">${action==='attended'?'✅ Attended':'⚠️ No-show'}</span>`;
+    } else {
+      showToast('Failed — check connection','error');
+      btnEl.disabled=false;btnEl.textContent=action==='attended'?'✅ Attended':'⚠️ No-show';
+    }
+  } catch(e){
+    showToast('Error — try again','error');
+    btnEl.disabled=false;btnEl.textContent=action==='attended'?'✅ Attended':'⚠️ No-show';
+  }
+}
+
+let tapCount=0,tapTimer=null;
+function handleTitleTap(){
+  tapCount++;clearTimeout(tapTimer);tapTimer=setTimeout(()=>tapCount=0,2000);
+  if(tapCount>=5){tapCount=0;clearTimeout(tapTimer);document.getElementById('reset-modal').classList.add('open');}
+}
+function closeReset(){document.getElementById('reset-modal').classList.remove('open');}
+function confirmReset(){
+  sessionStorage.clear();
+  document.getElementById('lock-screen').style.display='flex';
+  closeReset();
+}
+
+// ─────────────────────────────────────────
+// LOGIN — Backend JWT Auth
+// ─────────────────────────────────────────
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errorEl = document.getElementById('lock-error');
+  const btn = document.getElementById('login-btn');
+
+  if (!email || !password) {
+    errorEl.textContent = 'Please enter email and password.';
+    return;
+  }
+
+  btn.textContent = 'Signing in...';
+  btn.disabled = true;
+  errorEl.textContent = '';
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      // Store JWT and user info
+      sessionStorage.setItem('dental_jwt', data.data.accessToken);
+      sessionStorage.setItem('dental_refresh', data.data.refreshToken);
+      sessionStorage.setItem('dental_user', JSON.stringify(data.data.user));
+      sessionStorage.setItem('dental_clinic_id', data.data.user.clinicId);
+
+      // Hide login screen
+      document.getElementById('lock-screen').style.display = 'none';
+
+      // Load dashboard data
+      loadData();
+    } else {
+      errorEl.textContent = data.message || 'Invalid email or password.';
+      btn.textContent = 'Sign In';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    errorEl.textContent = 'Connection error. Please try again.';
+    btn.textContent = 'Sign In';
+    btn.disabled = false;
+  }
+}
+
+// ─────────────────────────────────────────
+// LOGOUT
+// ─────────────────────────────────────────
+function logout() {
+  const refreshToken = sessionStorage.getItem('dental_refresh');
+  const jwt = sessionStorage.getItem('dental_jwt');
+
+  // Call backend logout
+  if (jwt) {
+    fetch(`${BACKEND_URL}/api/auth/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jwt}`
+      },
+      body: JSON.stringify({ refreshToken })
+    }).catch(() => {});
+  }
+
+  // Clear session
+  sessionStorage.clear();
+  document.getElementById('lock-screen').style.display = 'flex';
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-password').value = '';
+}
+
+// ─────────────────────────────────────────
+// IDLE TIMEOUT — 30 minutes
+// ─────────────────────────────────────────
+let idleTimer;
+function resetIdleTimer() {
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => {
+    if (sessionStorage.getItem('dental_jwt')) {
+      showToast('Session expired due to inactivity', 'error');
+      setTimeout(logout, 2000);
+    }
+  }, 30 * 60 * 1000); // 30 minutes
+}
+document.addEventListener('mousemove', resetIdleTimer);
+document.addEventListener('keypress', resetIdleTimer);
+document.addEventListener('click', resetIdleTimer);
+resetIdleTimer();
+
+function parseDate(s){
+  if(!s)return null;s=String(s).trim();
+  if(s.match(/^\d{4}-\d{2}-\d{2}/))return new Date(s);
+  const p=s.split('/');if(p.length===3)return new Date(parseInt(p[2]),parseInt(p[1])-1,parseInt(p[0]));
+  return new Date(s);
+}
+function isSameDay(d1,d2){return d1&&d2&&d1.getFullYear()===d2.getFullYear()&&d1.getMonth()===d2.getMonth()&&d1.getDate()===d2.getDate();}
+function barHTML(name,count,max,color){
+  const pct=max>0?Math.round((count/max)*100):0;
+  return`<div class="bar-item"><div class="bar-meta"><span class="bar-name">${name}</span><span class="bar-num">${count}</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div></div>`;
+}
+function normaliseService(raw){
+  if(!raw)return '';const s=raw.trim();
+  if(/check/i.test(s))return 'Check-Up';
+  return s.toLowerCase().replace(/\b\w/g,l=>l.toUpperCase());
+}
+function parseTime(t){
+  if(!t)return 0;const m=t.match(/(\d+):(\d+)\s*(AM|PM)/i);if(!m)return 0;
+  let h=parseInt(m[1]),min=parseInt(m[2]),pm=m[3].toUpperCase()==='PM';
+  if(pm&&h!==12)h+=12;if(!pm&&h===12)h=0;return h*60+min;
+}
+function formatTime(str){
+  if(!str)return '—';if(str.match(/AM|PM/i))return str;
+  const p=str.split(':');if(p.length>=2){let h=parseInt(p[0]),m=parseInt(p[1]);const ap=h>=12?'PM':'AM';h=h%12||12;return h+':'+(m<10?'0'+m:m)+' '+ap;}return str;
+}
+function formatDate(str){
+  if(!str)return '—';const d=parseDate(str);if(!d||isNaN(d))return str;
+  return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+}
+const SVC={'braces':25000,'check-up':800,'check up':800,'general check-up':800,'general check up':800,'routine check-up':800,'dental check-up':800,'teeth whitening':4000,'scaling':1500,'filling':1200,'cleaning':1500,'extraction':1000,'root canal':3500,'consultation':500,'dental implants':20000,'veneers':8000,'crown':6000,'dentures':15000,'gum treatment':2000,'night guard':2500,'x-ray':500,'smile makeover':15000,'pediatric check-up':300,'wisdom tooth extraction':2500};
+function getSvcVal(s){if(!s)return 0;return SVC[s.toLowerCase().trim()]||800;}
+function fmtR(n){if(n>=100000)return '₹'+(n/100000).toFixed(1)+'L';if(n>=1000)return '₹'+(n/1000).toFixed(1)+'K';return '₹'+n;}
+
+function animateCount(id,target){
+  const el=document.getElementById(id);if(!el)return;
+  let start=0;const step=Math.max(1,Math.floor(target/40));
+  const interval=setInterval(()=>{start=Math.min(start+step,target);el.textContent=start;if(start>=target){clearInterval(interval);el.textContent=target;}},20);
+}
+function animateValue(id,to,formatter){
+  const el=document.getElementById(id);if(!el)return;
+  let start=0;const steps=50;const inc=to/steps;let i=0;
+  const interval=setInterval(()=>{i++;start=Math.min(start+inc,to);el.textContent=formatter(Math.round(start)).replace('₹','');if(i>=steps){clearInterval(interval);el.textContent=formatter(to).replace('₹','');}},16);
+}
+
+function sampleRecords(){
+  const d=o=>{const x=new Date();x.setDate(x.getDate()+o);return x.toLocaleDateString('en-GB').replace(/\//g,'/')};
+  return[
+    {name:'Rahul Sharma',service:'Braces',date:d(0),time:'09:00 AM',status:'booked',bookingid:'DENT-R001',attended:'no',reminder_1hr_sent:'',review_sent:'no',no_show_sent:'no'},
+    {name:'Priya Patel',service:'Cleaning',date:d(0),time:'11:30 AM',status:'booked',bookingid:'DENT-P002',attended:'no',reminder_1hr_sent:'yes',review_sent:'no',no_show_sent:'no'},
+    {name:'Sneha Reddy',service:'Root Canal',date:d(0),time:'02:00 PM',status:'attended',bookingid:'DENT-S003',attended:'yes',reminder_1hr_sent:'yes',review_sent:'yes',no_show_sent:'no'},
+    {name:'Arjun Mehta',service:'Teeth Whitening',date:d(-2),time:'09:00 AM',status:'not_attended',bookingid:'DENT-A004',attended:'no',reminder_1hr_sent:'yes',review_sent:'no',no_show_sent:'yes',recovered:'yes'},
+    {name:'Kavya Singh',service:'Braces',date:d(-3),time:'03:30 PM',status:'cancelled',bookingid:'DENT-K005',attended:'no',reminder_1hr_sent:'no',review_sent:'no',no_show_sent:'no'},
+    {name:'Vikram Nair',service:'Cleaning',date:d(1),time:'10:30 AM',status:'booked',bookingid:'DENT-V006',attended:'no',reminder_1hr_sent:'',review_sent:'no',no_show_sent:'no'},
+    {name:'Anita Rao',service:'General Check-Up',date:d(-4),time:'01:00 PM',status:'attended',bookingid:'DENT-AN07',attended:'yes',reminder_1hr_sent:'yes',review_sent:'yes',no_show_sent:'no'},
+    {name:'Rohan Das',service:'Routine Check-Up',date:d(-5),time:'04:00 PM',status:'not_attended',bookingid:'DENT-RO08',attended:'no',reminder_1hr_sent:'yes',review_sent:'no',no_show_sent:'yes',recovered:'no'},
+    {name:'Meera Joshi',service:'Braces',date:d(2),time:'11:00 AM',status:'booked',bookingid:'DENT-ME09',attended:'no',reminder_1hr_sent:'',review_sent:'no',no_show_sent:'no'},
+    {name:'Kiran Verma',service:'Check-Up',date:d(-6),time:'09:30 AM',status:'attended',bookingid:'DENT-KI10',attended:'yes',reminder_1hr_sent:'yes',review_sent:'yes',no_show_sent:'no'},
+    {name:'Divya Pillai',service:'Braces',date:d(3),time:'02:30 PM',status:'booked',bookingid:'DENT-DI11',attended:'no',reminder_1hr_sent:'',review_sent:'no',no_show_sent:'no'},
+    {name:'Suresh Kumar',service:'Dental Check-Up',date:d(-7),time:'10:00 AM',status:'not_attended',bookingid:'DENT-SU12',attended:'no',reminder_1hr_sent:'yes',review_sent:'no',no_show_sent:'yes',recovered:'no'},
+  ];
+}
+
+function renderDashboard(records){
+  records=records.map(r=>{const n={};Object.keys(r).forEach(k=>n[k.toLowerCase().trim().replace(/\s+/g,'_')]=typeof r[k]==='string'?r[k].trim():r[k]);return n;});
+  records=records.map(r=>({...r,service:normaliseService(r.service),status:r.status?String(r.status).trim().toLowerCase():'',attended:r.attended?String(r.attended).trim().toLowerCase():'',attend:r.attend?String(r.attend).trim().toLowerCase():'',review_sent:r.review_sent?String(r.review_sent).trim().toLowerCase():'',no_show_sent:r.no_show_sent?String(r.no_show_sent).trim().toLowerCase():'',reminder_1hr_sent:r.reminder_1hr_sent?String(r.reminder_1hr_sent).trim().toLowerCase():'',recovered:r.recovered?String(r.recovered).trim().toLowerCase():''}));
+
+  const today=new Date();today.setHours(0,0,0,0);
+  const tM=today.getMonth(),tY=today.getFullYear();
+  const total=records.length;
+  const todayRecs=records.filter(r=>isSameDay(parseDate(r.date),today));
+  const monthCount=records.filter(r=>{const d=parseDate(r.date);return d&&d.getMonth()===tM&&d.getFullYear()===tY}).length;
+  const noShows=records.filter(r=>r.status==='not_attended').length;
+  const cancelled=records.filter(r=>r.status==='cancelled').length;
+  const attendedRecs=records.filter(r=>r.attended==='yes'||r.attend==='yes'||r.status==='attended');
+  const attended=attendedRecs.length;
+  const noShowSent=records.filter(r=>r.no_show_sent==='yes').length;
+  const recovered=records.filter(r=>r.recovered==='yes').length;
+  const reviewsSent=records.filter(r=>r.review_sent==='yes').length;
+  const rem1hr=records.filter(r=>r.reminder_1hr_sent==='yes').length;
+  const nonCancelledTotal=records.filter(r=>r.status!=='cancelled').length;
+  const noShowRate=nonCancelledTotal>0?Math.round((noShows/nonCancelledTotal)*100):0;
+  const confirmedCount=records.filter(r=>['booked','confirmed','attended','rescheduled'].includes(r.status)).length;
+  const confRate=total>0?Math.round((confirmedCount/total)*100):0;
+
+  const revenueRecovered=records.filter(r=>r.recovered==='yes').reduce((s,r)=>s+getSvcVal(r.service),0);
+  const missedRevenue=records.filter(r=>r.status==='cancelled').reduce((s,r)=>s+getSvcVal(r.service),0);
+  const noShowRevenue=records.filter(r=>r.status==='not_attended').reduce((s,r)=>s+getSvcVal(r.service),0);
+  const thisMonthRevenue=attendedRecs.filter(r=>{const d=parseDate(r.date);return d&&d.getMonth()===tM&&d.getFullYear()===tY;}).reduce((s,r)=>s+getSvcVal(r.service),0);
+  const totalLost=missedRevenue+noShowRevenue;
+  const recoveryEff=totalLost>0?Math.round((revenueRecovered/totalLost)*100):0;
+
+  // TODAY OVERVIEW
+  const todayCancelled=todayRecs.filter(r=>r.status==='cancelled').length;
+  const todayUnconfirmed=todayRecs.filter(r=>r.status==='booked'&&r.reminder_1hr_sent!=='yes').length;
+  document.getElementById('ov-scheduled').textContent=todayRecs.length;
+  document.getElementById('ov-cancelled').textContent=todayCancelled;
+  document.getElementById('ov-confirm').textContent=confRate+'%';
+  document.getElementById('ov-recovered').textContent=recovered;
+
+  // HERO REVENUE — use toggle function
+  renderRevenue(records,window._revPeriod||'month',tM,tY);
+
+  // AI WORKED — use toggle function
+  renderAiWorked(records,window._aiPeriod||'today',tM,tY);
+
+  // TODAY SCHEDULE
+  const todayLabel=today.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'short'});
+  document.getElementById('today-date-label').textContent=todayLabel;
+  const todayAppts=todayRecs.filter(r=>!['attended','not_attended'].includes(r.status)).sort((a,b)=>parseTime(a.time)-parseTime(b.time));
+  document.getElementById('today-badge').textContent=todayAppts.length+(todayAppts.length===1?' patient':' patients');
+  const pillClass={booked:'pill-booked',rescheduled:'pill-rescheduled',attended:'pill-attended',confirmed:'pill-attended',cancelled:'pill-cancelled',not_attended:'pill-noshow'};
+  document.getElementById('today-slots').innerHTML=todayAppts.length
+    ?todayAppts.map(r=>{
+      const bid=r.bookingid||r.bookingId||r.booking_id||'';
+      const isDone=['attended','not_attended'].includes(r.status);
+      const btns=isDone
+        ?`<span class="btn-done">${r.status==='attended'?'✅ Attended':'⚠️ No-show'}</span>`
+        :(bid
+          ?`<button class="btn-attended" onclick="markAttendance('${bid}','attended',this)">✅ Attended</button><button class="btn-noshow" onclick="markAttendance('${bid}','not_attended',this)">⚠️ No-show</button>`
+          :`<span class="pill ${pillClass[r.status]||'pill-booked'}">${r.status||'booked'}</span>`);
+      return`<div class="today-slot">
+        <div class="today-slot-top">
+          <div class="today-time">${formatTime(r.time)}</div>
+          <div class="today-info"><div class="today-name">${r.name||'—'}</div><div class="today-service">${r.service||'—'}</div></div>
+        </div>
+        <div class="today-actions">${btns}</div>
+      </div>`;
+    }).join('')
+    :`<div class="today-empty">😊 No pending appointments right now — all clear!</div>`;
+
+  // PENDING ATTENTION — detailed
+  const weekAgo=new Date(today);weekAgo.setDate(today.getDate()-7);
+  const recentNoShows=records.filter(r=>{const d=parseDate(r.date);return d&&d>=weekAgo&&d<=today&&r.status==='not_attended';}).length;
+  const noShowsNeedingRecovery=records.filter(r=>r.status==='not_attended'&&r.no_show_sent!=='yes').length;
+  const cancellationsNeedingRecovery=records.filter(r=>r.status==='cancelled'&&r.no_show_sent!=='yes').length;
+  const bookedNoReminder=records.filter(r=>{
+    const d=parseDate(r.date);if(!d)return false;
+    const dc=new Date(d);dc.setHours(0,0,0,0);
+    const diff=(dc-today)/(1000*60*60*24);
+    return r.status==='booked'&&r.reminder_1hr_sent!=='yes'&&diff>=0&&diff<=1;
+  }).length;
+  const risks=[];
+  if(todayUnconfirmed>0)risks.push({msg:todayUnconfirmed+' patient(s) unconfirmed for today — send manual reminder',level:'red'});
+  if(todayCancelled>0)risks.push({msg:todayCancelled+' cancellation(s) today — recovery message may be needed',level:'amber'});
+  if(noShowsNeedingRecovery>0)risks.push({msg:noShowsNeedingRecovery+' no-show(s) haven\'t received recovery message yet',level:'amber'});
+  if(cancellationsNeedingRecovery>0)risks.push({msg:cancellationsNeedingRecovery+' cancellation(s) awaiting recovery follow-up',level:'amber'});
+  if(bookedNoReminder>0)risks.push({msg:bookedNoReminder+' upcoming patient(s) haven\'t received reminder yet',level:'amber'});
+  if(noShows>recovered)risks.push({msg:(noShows-recovered)+' unrecovered no-show(s) still pending rebooking',level:'amber'});
+  document.getElementById('risks-list').innerHTML=risks.length
+    ?risks.map(r=>`<div class="attention-item"><div class="attention-dot ${r.level}"></div><span class="attention-text">${r.msg}</span></div>`).join('')
+    :`<div class="attention-none">✅ No pending attention needed — clinic on track!</div>`;
+
+  // CONFIRMATION RING
+  document.getElementById('conf-rate-val').textContent=confRate+'%';
+  document.getElementById('conf-rate-val').className='conf-val '+(confRate>=80?'good':confRate>=50?'warn':'bad');
+  const circ=226.2,offset=circ-(confRate/100)*circ;
+  setTimeout(()=>{document.getElementById('conf-arc').style.strokeDashoffset=offset;},250);
+  document.getElementById('conf-arc').style.stroke=confRate>=80?'var(--teal)':confRate>=50?'var(--amber)':'var(--red)';
+
+  // KPIs
+  animateCount('m-total',total);
+  animateCount('m-month',monthCount);
+  document.getElementById('m-month-sub').textContent=today.toLocaleString('default',{month:'long'});
+  animateCount('m-today',todayRecs.length);
+  const nv=document.getElementById('m-noshow');
+  nv.textContent=noShowRate+'%';nv.className='kpi-val '+(noShowRate>25?'bad':noShowRate>10?'warn':'good');
+
+  // FUNNEL
+  const funnelData=[
+    {label:'Total Booked',count:total,color:'#1450a0'},
+    {label:'Confirmed',count:confirmedCount,color:'#6d28d9'},
+    {label:'Attended',count:attended,color:'#0a7265'},
+    {label:'Recovered',count:recovered,color:'#8f6b1a'},
+  ];
+  document.getElementById('funnel-count').textContent=Math.round(total>0?(attended/total)*100:0)+'% attendance rate';
+  document.getElementById('funnel-wrap').innerHTML=funnelData.map(f=>`
+    <div class="funnel-row">
+      <div class="funnel-label">${f.label}</div>
+      <div class="funnel-track"><div class="funnel-fill" style="width:0%;background:${f.color}" data-pct="${total>0?Math.round((f.count/total)*100):0}"></div></div>
+      <div class="funnel-num">${f.count}</div>
+    </div>`).join('');
+  setTimeout(()=>{document.querySelectorAll('.funnel-fill').forEach(el=>{el.style.width=el.dataset.pct+'%';});},300);
+
+  // AI SUGGESTIONS
+  const insights=[];
+  const svcCancel={};records.filter(r=>r.status==='cancelled').forEach(r=>{if(r.service)svcCancel[r.service]=(svcCancel[r.service]||0)+1;});
+  const topC=Object.entries(svcCancel).sort((a,b)=>b[1]-a[1])[0];
+  if(topC)insights.push({type:'warn',icon:'🟠',text:`${topC[0]} has the highest cancellation rate (${topC[1]} cancellations) — consider sending reminders 2 hours earlier`});
+  const rebookRate=noShowSent>0?Math.round((recovered/noShowSent)*100):0;
+  if(noShows>0)insights.push({type:rebookRate>30?'good':'warn',icon:rebookRate>30?'🟢':'🟠',text:`Recovery conversion is ${rebookRate}% — ${recovered} of ${noShowSent} recovery messages led to rebooking`});
+  const svcMap={};records.forEach(r=>{if(r.service)svcMap[r.service]=(svcMap[r.service]||0)+1;});
+  const topS=Object.entries(svcMap).sort((a,b)=>b[1]-a[1])[0];
+  if(topS)insights.push({type:'blue',icon:'📈',text:`${topS[0]} is your most popular service with ${topS[1]} total appointments`});
+  if(todayUnconfirmed>0)insights.push({type:'red',icon:'🔴',text:`${todayUnconfirmed} patient(s) today haven't confirmed — manual follow-up recommended now`});
+  if(revenueRecovered>0)insights.push({type:'good',icon:'🟢',text:`AI automation recovered ${fmtR(revenueRecovered)} in revenue — ${recoveryEff}% efficiency vs ${fmtR(totalLost)} total losses`});
+  if(!insights.length)insights.push({type:'blue',icon:'✨',text:'Connect your sheet to generate AI-powered insights about your clinic'});
+  document.getElementById('ai-suggestions').innerHTML=insights.map(i=>`<div class="insight-card ${i.type}"><span class="insight-icon">${i.icon}</span><span class="insight-text">${i.text}</span></div>`).join('');
+
+  // UPCOMING
+  const upcoming=records.filter(r=>{if(r.status!=='booked')return false;const d=parseDate(r.date);if(!d)return false;const dc=new Date(d);dc.setHours(0,0,0,0);return dc>today;}).sort((a,b)=>(parseDate(a.date)||0)-(parseDate(b.date)||0)).slice(0,15);
+  document.getElementById('upcoming-count').textContent=upcoming.length+' upcoming';
+  document.getElementById('appt-list').innerHTML=upcoming.length
+    ?upcoming.map(r=>`<div class="appt-card"><div class="appt-card-top"><div class="appt-patient">${r.name||'—'}</div><span class="pill ${pillClass[r.status]||'pill-booked'}">${r.status||'booked'}</span></div><div class="appt-card-meta"><span>🦷 ${r.service||'—'}</span><span>📅 ${formatDate(r.date)}</span><span>⏰ ${formatTime(r.time)}</span></div><div class="appt-bid">${r.bookingid||r.bookingId||'—'}</div></div>`).join('')
+    :`<div class="empty">😊 No upcoming appointments scheduled yet</div>`;
+
+  // HISTORY
+  const history=records.filter(r=>{if(!['attended','not_attended'].includes(r.status))return false;const d=parseDate(r.date);return d&&d.getMonth()===tM&&d.getFullYear()===tY;}).sort((a,b)=>(parseDate(b.date)||0)-(parseDate(a.date)||0));
+  const mn=today.toLocaleString('default',{month:'long'});
+  document.getElementById('history-count').textContent=history.length+' in '+mn;
+  document.getElementById('history-list').innerHTML=history.length
+    ?history.map(r=>`<div class="appt-card" style="border-left:3px solid ${r.status==='attended'?'var(--teal)':'var(--amber)'}"><div class="appt-card-top"><div class="appt-patient">${r.name||'—'}</div><span class="pill ${r.status==='attended'?'pill-attended':'pill-noshow'}">${r.status==='attended'?'Attended':'No-show'}</span></div><div class="appt-card-meta"><span>🦷 ${r.service||'—'}</span><span>📅 ${formatDate(r.date)}</span><span>⏰ ${formatTime(r.time)}</span></div><div class="appt-bid">${r.bookingid||r.bookingId||'—'}</div></div>`).join('')
+    :`<div class="empty">No visit records yet this month</div>`;
+
+  window._allRecords=records;window._tM=tM;window._tY=tY;
+  renderBreakdown(records,window._period||'month',tM,tY);
+  document.getElementById('footer-time').textContent='Updated '+new Date().toLocaleTimeString();
+}
+
+function renderBreakdown(records,period,tM,tY){
+  const label=period==='month'?new Date().toLocaleString('default',{month:'long'}):'All time';
+  const r=period==='month'?records.filter(x=>{const d=parseDate(x.date);return d&&d.getMonth()===tM&&d.getFullYear()===tY;}):records;
+  const booked=r.filter(x=>x.status==='booked').length;
+  const attended=r.filter(x=>x.attended==='yes'||x.attend==='yes'||x.status==='attended'||x.status==='confirmed').length;
+  const cancelled=r.filter(x=>x.status==='cancelled').length;
+  const noShows=r.filter(x=>x.status==='not_attended').length;
+  const noShowSent=r.filter(x=>x.no_show_sent==='yes').length;
+  const recovered=r.filter(x=>x.recovered==='yes').length;
+  const reviewsSent=r.filter(x=>x.review_sent==='yes').length;
+  const rebookRate=noShowSent>0?Math.round((recovered/noShowSent)*100):0;
+  const statusData=[{label:'Booked',count:booked,color:'#1450a0'},{label:'Attended',count:attended,color:'#0a7265'},{label:'Cancelled',count:cancelled,color:'#a42b2b'},{label:'No-show',count:noShows,color:'#b85c0a'}];
+  const maxS=Math.max(...statusData.map(x=>x.count),1);
+  document.getElementById('status-bars').innerHTML=statusData.map(s=>barHTML(s.label,s.count,maxS,s.color)).join('');
+  document.getElementById('status-total').textContent=(booked+attended+cancelled+noShows)+' · '+label;
+  const svcMap={};r.forEach(x=>{if(x.service)svcMap[x.service]=(svcMap[x.service]||0)+1;});
+  const svcs=Object.entries(svcMap).sort((a,b)=>b[1]-a[1]);
+  const maxSvc=Math.max(...svcs.map(x=>x[1]),1);
+  const svcColors=['#6d28d9','#0a7265','#b85c0a','#1450a0','#8f6b1a','#a42b2b'];
+  document.getElementById('service-bars').innerHTML=svcs.length?svcs.map((s,i)=>barHTML(s[0],s[1],maxSvc,svcColors[i%svcColors.length])).join(''):'<div class="empty">No data</div>';
+  document.getElementById('service-total').textContent=svcs.length+' services · '+label;
+  document.getElementById('noshow-stats').innerHTML=`
+    <div class="stat-row"><span class="stat-label">Total no-shows</span><span class="stat-val ${noShows>5?'bad':noShows>2?'warn':'good'}">${noShows}</span></div>
+    <div class="stat-row"><span class="stat-label">Recovery messages sent</span><span class="stat-val">${noShowSent}</span></div>
+    <div class="stat-row"><span class="stat-label">Patients rebooked</span><span class="stat-val ${recovered>0?'good':'bad'}">${recovered} ↩</span></div>
+    <div class="stat-row"><span class="stat-label">Rebook conversion rate</span><span class="stat-val ${rebookRate>50?'good':rebookRate>25?'warn':'bad'}">${rebookRate}%</span></div>
+    <div class="stat-row"><span class="stat-label">Cancellations</span><span class="stat-val">${cancelled}</span></div>
+    <div class="stat-row"><span class="stat-label">Confirmed attended</span><span class="stat-val good">${attended}</span></div>`;
+  document.getElementById('activity-grid').innerHTML=`
+    <div class="activity-item"><div class="activity-num" style="color:var(--teal)">${attended}</div><div class="activity-label">Confirmed</div></div>
+    <div class="activity-item"><div class="activity-num" style="color:var(--gold)">${recovered}</div><div class="activity-label">Recovered</div></div>
+    <div class="activity-item"><div class="activity-num">${reviewsSent}</div><div class="activity-label">Reviews</div></div>`;
+}
+
+function toggleConfig(){document.getElementById('config-panel').classList.toggle('open');}
+function setConnectedState(c){document.getElementById('connect-btn').style.display=c?'none':'block';}
+function setStatus(type,msg){
+  const bar=document.getElementById('status-bar');
+  bar.className='status-bar '+(type==='live'?'live':type==='warn'?'warn':type==='err'?'err':'');
+  document.getElementById('status-msg').textContent=msg;
+  document.getElementById('data-status').textContent=type==='live'?'Live data':type==='err'?'Error':'Sample data';
+  document.getElementById('last-updated').textContent=new Date().toLocaleTimeString();
+}
+function loadData(){
+  // Get clinic config from backend using JWT
+  const jwt = sessionStorage.getItem('dental_jwt');
+  const user = JSON.parse(sessionStorage.getItem('dental_user') || '{}');
+
+  if (!jwt) {
+    renderDashboard(sampleRecords());
+    setStatus('','Please login to see live data');
+    return;
+  }
+
+  // Get clinic name from user data
+  setStatus('warn','Loading live data...');
+
+  // Fetch clinic config from backend
+  fetch(`${BACKEND_URL}/api/clinic`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwt}`
+    }
+  })
+  .then(r => {
+    if (r.status === 401) { logout(); throw new Error('Session expired'); }
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  })
+  .then(clinicData => {
+    const clinic = clinicData.data?.clinic;
+    if (!clinic) throw new Error('No clinic data');
+
+    // Set clinic name in header
+    const name = clinic.name || 'Smile Dental Clinic';
+    const parts = name.split(' ');
+    if(parts.length>=2) document.getElementById('clinic-title').innerHTML=parts[0]+' <em>'+parts.slice(1).join(' ')+'</em>';
+    else document.getElementById('clinic-title').textContent=name;
+
+    // Now fetch dashboard data from clinic's n8n webhook
+    const webhookUrl = clinic.dashboard_webhook_url;
+    const token = clinic.dashboard_token;
+
+    if (!webhookUrl || !token) {
+      renderDashboard(sampleRecords());
+      setStatus('warn', 'Clinic webhook not configured — showing sample data');
+      return;
+    }
+
+    return fetch(webhookUrl, {
+      method: 'GET',
+      headers: { 'X-Dashboard-Token': token }
+    });
+  })
+  .then(r => {
+    if (!r || !r.ok) throw new Error('Webhook error');
+    return r.json();
+  })
+  .then(data => {
+    let records = Array.isArray(data) ? data : data.data || data.records || [];
+    if (!records.length) {
+      setStatus('warn', 'Connected but no data found');
+      renderDashboard([]);
+      return;
+    }
+    renderDashboard(records);
+    setStatus('live', 'Live data');
+    setConnectedState(true);
+    document.getElementById('config-panel').classList.remove('open');
+  })
+  .catch(err => {
+    if (err.message === 'Session expired') return;
+    setStatus('err', 'Could not connect — showing sample data.');
+    renderDashboard(sampleRecords());
+  });
+}
+
+window._period='month';
+window._revPeriod='month';
+window._aiPeriod='today';
+
+function setPeriod(p){
+  window._period=p;
+  document.getElementById('btn-month').classList.toggle('active',p==='month');
+  document.getElementById('btn-all').classList.toggle('active',p==='all');
+  if(window._allRecords)renderBreakdown(window._allRecords,p,window._tM,window._tY);
+}
+
+function setRevPeriod(p){
+  window._revPeriod=p;
+  document.getElementById('rev-btn-month').classList.toggle('active',p==='month');
+  document.getElementById('rev-btn-all').classList.toggle('active',p==='all');
+  if(window._allRecords)renderRevenue(window._allRecords,p,window._tM,window._tY);
+}
+
+function setAiPeriod(p){
+  window._aiPeriod=p;
+  ['today','month','all'].forEach(x=>{
+    const btn=document.getElementById('ai-btn-'+x);
+    if(btn){
+      btn.classList.toggle('active',x===p);
+      btn.style.color=x===p?'var(--ink)':'rgba(255,255,255,0.4)';
+    }
+  });
+  if(window._allRecords)renderAiWorked(window._allRecords,p,window._tM,window._tY);
+}
+
+function renderRevenue(records,period,tM,tY){
+  const r=period==='month'?records.filter(x=>{const d=parseDate(x.date);return d&&d.getMonth()===tM&&d.getFullYear()===tY;}):records;
+  const revenueRecovered=r.filter(x=>x.recovered==='yes').reduce((s,x)=>s+getSvcVal(x.service),0);
+  const missedRevenue=r.filter(x=>x.status==='cancelled').reduce((s,x)=>s+getSvcVal(x.service),0);
+  const noShowRevenue=r.filter(x=>x.status==='not_attended').reduce((s,x)=>s+getSvcVal(x.service),0);
+  const attendedRecs=r.filter(x=>x.attended==='yes'||x.attend==='yes'||x.status==='attended');
+  const earnedRevenue=attendedRecs.reduce((s,x)=>s+getSvcVal(x.service),0);
+  const totalLost=missedRevenue+noShowRevenue;
+  const recoveryEff=totalLost>0?Math.round((revenueRecovered/totalLost)*100):0;
+  const monthName=new Date().toLocaleString('default',{month:'long'});
+  const label=period==='month'?monthName:'All Time';
+
+  // Update hero tag title
+  const tagEl=document.getElementById('hero-tag-text');
+  if(tagEl)tagEl.textContent=period==='month'?`Revenue Recovered — ${monthName}`:'Total Revenue Recovered — All Time';
+
+  // Update stat labels
+  const statLabels=document.querySelectorAll('.hero-stat-label');
+  if(statLabels.length>=3){
+    statLabels[0].textContent='Lost to cancellations';
+    statLabels[1].textContent='Lost to no-shows';
+    statLabels[2].textContent=period==='month'?`Earned in ${monthName}`:'Earned this month';
+  }
+
+  animateValue('hero-rev-num',revenueRecovered,fmtR);
+  document.getElementById('hero-badge').textContent='💰 '+r.filter(x=>x.recovered==='yes').length+' patients rebooked · '+recoveryEff+'% efficiency · '+label;
+  document.getElementById('hero-missed').textContent=fmtR(missedRevenue);
+  document.getElementById('hero-noshow-rev').textContent=fmtR(noShowRevenue);
+  document.getElementById('hero-month-rev').textContent=fmtR(earnedRevenue);
+  document.getElementById('leakage-eff').textContent=recoveryEff+'% efficiency · '+label;
+  document.getElementById('leak-cancel').textContent=fmtR(missedRevenue);
+  document.getElementById('leak-noshow').textContent=fmtR(noShowRevenue);
+  document.getElementById('leak-recovered').textContent=fmtR(revenueRecovered);
+}
+
+function renderAiWorked(records,period,tM,tY){
+  const today=new Date();today.setHours(0,0,0,0);
+  let r;
+  if(period==='today') r=records.filter(x=>isSameDay(parseDate(x.date),today));
+  else if(period==='month') r=records.filter(x=>{const d=parseDate(x.date);return d&&d.getMonth()===tM&&d.getFullYear()===tY;});
+  else r=records;
+
+  const titleMap={today:'AI Worked Today',month:'AI Worked This Month',all:'AI Work — All Time'};
+  const subMap={today:'TODAY\'S AUTOMATION SUMMARY',month:'THIS MONTH\'S SUMMARY',all:'ALL TIME SUMMARY'};
+  const el=document.getElementById('ai-worked-title');
+  const sub=document.getElementById('ai-worked-sub');
+  if(el)el.textContent=titleMap[period];
+  if(sub)sub.textContent=subMap[period];
+
+  const reminders=r.filter(x=>x.reminder_1hr_sent==='yes').length;
+  const confirmed=r.filter(x=>['booked','attended','confirmed'].includes(x.status)).length;
+  const recovered=r.filter(x=>x.recovered==='yes').length;
+  const reviews=r.filter(x=>x.review_sent==='yes').length;
+  const recoveryMsgs=r.filter(x=>x.no_show_sent==='yes').length;
+
+  document.getElementById('ai-worked-stats').innerHTML=[
+    {icon:'⏰',text:'Appointment reminders sent',val:reminders},
+    {icon:'✅',text:'Appointments confirmed',val:confirmed},
+    {icon:'💰',text:'Patients recovered',val:recovered},
+    {icon:'⭐',text:'Google reviews generated',val:reviews},
+    {icon:'🔄',text:'Recovery messages delivered',val:recoveryMsgs},
+  ].map(s=>`<div class="ai-stat-row"><span class="ai-stat-icon">${s.icon}</span><span class="ai-stat-text">${s.text}</span><span class="ai-stat-val">${s.val}</span></div>`).join('');
+}
+
+(function boot(){
+  // Check if user already has valid JWT session
+  const jwt = sessionStorage.getItem('dental_jwt');
+  const user = JSON.parse(sessionStorage.getItem('dental_user') || 'null');
+
+  if (jwt && user) {
+    // Already logged in — hide login screen and load data
+    document.getElementById('lock-screen').style.display = 'none';
+    loadData();
+  } else {
+    // Show login screen
+    document.getElementById('lock-screen').style.display = 'flex';
+    renderDashboard(sampleRecords());
+    setStatus('', 'Please login to see live data');
+  }
+
+  document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+})();
+</script>
+</body>
+</html>
