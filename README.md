@@ -18,7 +18,7 @@ This dashboard does not contain the backend, the database, or the AI workflow au
 - Booking-to-attended pipeline visualization
 - Revenue recovery and revenue leakage breakdown
 - AI automation activity summary ("AI Worked Today")
-- Auto-generated smart insights from clinic data
+- Automated operational insights based on clinic metrics
 - Staff login screen
 - Lightweight, dependency-free frontend (HTML/CSS/JS)
 
@@ -36,13 +36,10 @@ This dashboard exists to close that gap: to give staff a single screen that answ
 
 This dashboard is one piece of the larger Clinic OS system, not a standalone application. Conceptually, it sits at the top of the stack, consuming data produced by the layers below it:
 
-```
-Dashboard UI  →  Backend API  →  n8n Automation  →  OpenAI  →  Clinic Operations
-```
+![Clinic OS Dashboard Architecture](screenshots/clinic-os-dashboard-architecture.png)
 
-The dashboard is a static frontend: it renders whatever appointment, recovery, and insight data it's given. The backend API, workflow automation, and AI reasoning that produce that data are out of scope for this repository — see the Clinic OS backend and workflow repositories for that logic.
+The dashboard is responsible only for presenting operational data. Business logic, authentication, workflow orchestration, and data processing are handled by the Clinic OS backend and n8n automation layer. Google Sheets serves as the operational datastore for this prototype, while the dashboard focuses on providing staff with a clear operational view of clinic activity.
 
-*Note: this repository does not currently include a dedicated architecture diagram image. The flow above reflects the intended system layering.*
 
 ---
 
@@ -55,7 +52,7 @@ The main landing screen. Shows a "Today at a Glance" summary — scheduled appoi
 A staff-only sign-in screen for the clinic's "AI Command Center," gated behind an email and password field. Branded per-clinic (e.g. "Smile Dental") with a note that the system is powered by WhatsApp AI automation.
 
 ### Smart Insights
-Surfaces a booking-to-attended pipeline (total booked → confirmed → attended → recovered) alongside a set of auto-generated, plain-language insights — for example, flagging which service has the highest cancellation rate or what percentage of recovery messages led to a rebooking.
+Surfaces a booking-to-attended pipeline (total booked → confirmed → attended → recovered) alongside rule-based operational insights derived from clinic metrics—for example, identifying the service with the highest cancellation rate or highlighting recovery message effectiveness.
 
 ### Recovery Analytics
 Breaks down revenue recovered for the current period, plus a "Revenue Leakage" panel splitting out money lost to cancellations, money lost to no-shows, and money recovered by the AI automation layer.
@@ -89,10 +86,13 @@ Combines an "AI Worked Today" activity log (reminders sent, appointments confirm
 ## Tech Stack
 
 | Layer | Technology |
-|---|---|
-| Structure | HTML |
+|--------|------------|
+| Frontend | HTML |
 | Styling | CSS |
 | Interactivity | JavaScript |
+| Backend API | Node.js / Express (Separate Repository) |
+| Workflow Automation | n8n (Separate Repository) |
+| Database | Google Sheets |
 
 ---
 
@@ -108,7 +108,7 @@ Staff-only sign-in for the clinic's AI Command Center.
 
 ### Smart Insights
 ![Smart Insights](screenshots/smart-insights.png)
-Booking-to-attended pipeline alongside auto-generated insights, such as which service has the highest cancellation rate.
+Booking-to-attended pipeline alongside rule-based operational insights generated from clinic metrics.
 
 ### Recovery Analytics
 ![Recovery Analytics](screenshots/recovery-analytics.png)
@@ -124,7 +124,7 @@ A daily automation activity log ("AI Worked Today") paired with today's live sch
 
 Designing this dashboard was less about the frontend code and more about figuring out what clinic staff actually need to see, and in what order, during a busy shift. Early iterations tried to show everything at once; the more useful version turned out to be a small number of focused panels that each answer one question clearly.
 
-The other lesson was about making automation visible rather than invisible. It's easy to build automation that quietly does its job in the background, but for staff to trust it, they need a way to see what it did and verify the results — which is why "AI Worked Today" and the recovery analytics ended up being as important as the appointment data itself.
+The other lesson was that building automation is only half of the solution. Operational teams also need visibility into what the automation is doing, why certain outcomes occurred, and whether those workflows are actually improving clinic operations. Features like "AI Worked Today", recovery analytics, and operational insights were designed to provide that transparency and help staff trust the automation running behind the scenes.
 
 ---
 
