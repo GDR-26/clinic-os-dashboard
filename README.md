@@ -183,5 +183,4 @@ This dashboard is one component of the complete Clinic OS platform.
 ## Connect
 
 * 💼 **LinkedIn:** https://linkedin.com/in/dhruva-reddy-gaddam
-* 💻 **GitHub:** https://github.com/GDR-26
 * 🌐 **Portfolio:** https://gdr-26-portfolio.netlify.app/
